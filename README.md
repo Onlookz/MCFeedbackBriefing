@@ -2,6 +2,13 @@
 
 给网易《MC》开发者用的 Windows 桌面工具。把作品评论和玩家反馈整理成按项目查看的简报，优先呈现可定位的问题、可执行的建议和截图线索。适用于个人非商业使用。
 
+## 下载安装
+
+- **Windows x64 安装版** · 下载 `.msi` 后双击，按安装向导操作。 [下载 MSI](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.11-briefing.1/MCFeedbackBriefing-1.2.11.msi)
+- **Windows x64 便携版** · 解压整个 ZIP，再打开解压目录中的 `MCFeedbackBriefing.exe`。 [下载 ZIP](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.11-briefing.1/MCFeedbackBriefing-1.2.11-portable.zip)
+
+两个版本都内置 Java 运行环境。 [查看所有版本](https://github.com/Onlookz/MCFeedbackBriefing/releases)
+
 ## 界面预览
 
 **简报工作区**按项目展开，查看问题和建议、反馈时间、截图及回复入口。
@@ -47,6 +54,6 @@ AI 整理会把经过常见敏感信息替换的反馈文本发送到所配置�
 
 本派生版沿用 **BitterLemon Noncommercial Copyleft License 1.0（BNCL-1.0）**，保留原版权 **Copyright © 2024–2026 BitterLemon**。协议允许在符合条款的前提下查看、修改、构建和分发源码。商业使用须事先取得版权所有者书面授权。 [完整许可证](LICENSE)
 
-本仓库提供玩家反馈简报的完整对应源码与构建脚本，应用内可在「AI 连接」底部查看源码地址。 [GitHub 源码](https://github.com/pangguanzhe0913/MCFeedbackBriefing)
+本仓库提供玩家反馈简报的完整对应源码与构建脚本，应用内可在「AI 连接」底部查看源码地址。 [GitHub 源码](https://github.com/Onlookz/MCFeedbackBriefing)
 
-本项目与网易官方无关。遇到问题或有功能建议，可在派生仓库提交。 [GitHub Issues](https://github.com/pangguanzhe0913/MCFeedbackBriefing/issues)
+本项目与网易官方无关。遇到问题或有功能建议，可在派生仓库提交。 [GitHub Issues](https://github.com/Onlookz/MCFeedbackBriefing/issues)

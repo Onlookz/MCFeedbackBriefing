@@ -27,6 +27,16 @@ dependencies {
 
 val appName = "MCFeedbackBriefing"
 val appVersion = libs.versions.versions.name.get()
+val briefingResources = layout.buildDirectory.dir("generated/briefing-app-resources")
+
+val prepareBriefingLicense by tasks.registering(Sync::class) {
+    from(rootProject.file("LICENSE"))
+    into(briefingResources.map { it.dir("common") })
+}
+
+tasks.matching { it.name == "prepareAppResources" }.configureEach {
+    dependsOn(prepareBriefingLicense)
+}
 
 compose.desktop {
     application {
@@ -37,6 +47,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = appName
             packageVersion = appVersion
+            appResourcesRootDir.set(briefingResources)
 
             windows {
                 menuGroup = appName

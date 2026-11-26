@@ -60,7 +60,7 @@ import java.nio.file.Path
 
 internal val controlShape = RoundedCornerShape(6.dp)
 private const val SYNC_INTERVAL_MILLIS = 60 * 60 * 1000L
-private const val BRIEFING_SOURCE_URL = "https://github.com/pangguanzhe0913/MCFeedbackBriefing"
+private const val BRIEFING_SOURCE_URL = "https://github.com/Onlookz/MCFeedbackBriefing"
 
 @Composable
 internal fun FeedbackBriefingApp(animateBackdrop: Boolean, onAppearance: () -> Unit) {
