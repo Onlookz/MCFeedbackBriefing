@@ -43,7 +43,7 @@ AI 整理会把经过常见敏感信息替换的反馈文本发送到所配置�
 
 ## 来源和许可证
 
-本项目是基于 MCDevManager v1.2.11 的第三方派生版。上游版本对应提交 `619b4417ee6764f18568968950a9a8b58d08729f`。修改者为老曾，修改日期为 2026-11-26 至 2026-11-27。派生版把 Windows 主入口改为玩家反馈简报，加入 AI 整理、原文确认、截图、回复、WPS 导出和独立界面。 [上游项目与文档](https://github.com/BitterLemonn/MCDevManager/tree/619b4417ee6764f18568968950a9a8b58d08729f)
+本项目是基于 MCDevManager v1.2.11 的第三方派生版。上游版本对应提交 `619b4417ee6764f18568968950a9a8b58d08729f`。修改者为旁观者，修改日期为 2026-11-26 至 2026-11-27。派生版把 Windows 主入口改为玩家反馈简报，加入 AI 整理、原文确认、截图、回复、WPS 导出和独立界面。 [上游项目与文档](https://github.com/BitterLemonn/MCDevManager/tree/619b4417ee6764f18568968950a9a8b58d08729f)
 
 本派生版沿用 **BitterLemon Noncommercial Copyleft License 1.0（BNCL-1.0）**，保留原版权 **Copyright © 2024–2026 BitterLemon**。协议允许在符合条款的前提下查看、修改、构建和分发源码。商业使用须事先取得版权所有者书面授权。 [完整许可证](LICENSE)
 
