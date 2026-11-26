@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 dependencies {
@@ -11,18 +12,20 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.compose.uiToolingPreview)
     // compose ui —— WindowDragArea / Window / FrameWindowScope 等 desktop API
     implementation(libs.compose.ui)
     // material3
     implementation(libs.compose.material3)
-    // richeditor
-    implementation(libs.richeditor.compose)
     // logback
     implementation(libs.logback.classic)
+    implementation("net.java.dev.jna:jna-platform:5.19.1")
+
+    testImplementation(libs.kotlin.testJunit)
 }
 
-val appName = "MCDevManager"
+val appName = "MCFeedbackBriefing"
 val appVersion = libs.versions.versions.name.get()
 
 compose.desktop {
@@ -30,14 +33,14 @@ compose.desktop {
         mainClass = "com.lemon.mcdevmanagermp.MainKt"
 
         nativeDistributions {
+            modules("java.net.http")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = appName
             packageVersion = appVersion
 
             windows {
                 menuGroup = appName
-                upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-                iconFile.set(project.file("icons/icon-windows.ico"))
+                upgradeUuid = "f78faf01-89de-4d3a-8e0f-f27174e34504"
             }
 
             macOS {
@@ -45,11 +48,6 @@ compose.desktop {
                 // 不支持前导零、预发布后缀、超过 3 段
                 val cleanVersion = appVersion.substringBefore("-").removePrefix("0.")
                 packageVersion = cleanVersion.split(".").take(3).joinToString(".")
-                iconFile.set(project.file("icons/icon-mac.icns"))
-            }
-
-            linux {
-                iconFile.set(project.file("icons/icon-linux.png"))
             }
         }
     }
@@ -60,7 +58,10 @@ tasks.register<Zip>("packagePortable") {
     description = "Create a portable zip archive (免安装版)"
     dependsOn("createDistributable")
 
-    from(layout.buildDirectory.dir("compose/binaries/main/app/${appName}"))
+    from(layout.buildDirectory.dir("compose/binaries/main/app/${appName}")) {
+        exclude("**/.data/**", "**/logs/**", "**/downloads/**", "**/.patch_temp/**")
+    }
+    from(rootProject.file("LICENSE"))
     into(appName)
     archiveFileName.set("$appName-$appVersion-portable.zip")
     destinationDirectory.set(layout.buildDirectory.dir("release/portable"))

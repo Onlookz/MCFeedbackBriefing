@@ -1,11 +1,9 @@
 package com.lemon.mcdevmanagermp.utils
 
-import com.lemon.mcdevmanagermp.data.common.AppContext
 import com.lemon.mcdevmanagermp.data.common.NetworkState
 import com.lemon.mcdevmanagermp.data.common.ResponseData
 import com.lemon.mcdevmanagermp.data.consts.CookiesExpiredException
 import com.lemon.mcdevmanagermp.data.consts.LoginException
-import com.lemon.mcdevmanagermp.data.consts.NETEASE_USER_COOKIE
 import com.lemon.mcdevmanagermp.data.consts.NeteaseLoginException
 import com.lemon.mcdevmanagermp.data.consts.NetworkException
 import com.lemon.mcdevmanagermp.data.consts.neteaseLoginErrorMessage
@@ -119,13 +117,7 @@ object UnifiedExceptionHandler {
         }
     }
 
-    private fun <T> parseData(
-        result: ResponseData<T>,
-        noNeedRefreshCookies: Boolean = false
-    ): NetworkState<T> {
-        if (!noNeedRefreshCookies) {
-            refreshCookiesIfChanged()
-        }
+    private fun <T> parseData(result: ResponseData<T>): NetworkState<T> {
         val errorMessage = result.errorMessage()
 
         return when (result.status) {
@@ -145,13 +137,6 @@ object UnifiedExceptionHandler {
                 NetworkState.Error(errorMessage)
             }
         }
-    }
-
-    private fun refreshCookiesIfChanged() {
-        val returnCookies = CookiesStore.getCookie(NETEASE_USER_COOKIE) ?: return
-        // Cookie 持久化
-//        Logger.d("Cookie 已更新")
-        AppContext.cookiesStore.addCookie(NETEASE_USER_COOKIE, returnCookies)
     }
 
     suspend fun <T> unwrapNetworkState(state: NetworkState<T>): T? {

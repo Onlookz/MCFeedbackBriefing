@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -71,14 +70,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import com.github.panpf.sketch.AsyncImage
-import com.github.panpf.sketch.rememberAsyncImageState
-import com.github.panpf.sketch.request.ComposableImageOptions
-import com.github.panpf.sketch.request.error
-import com.github.panpf.sketch.request.fallback
-import com.github.panpf.sketch.request.placeholder
 import com.lemon.mcdevmanagermp.ui.components.AppScaffold
 import com.lemon.mcdevmanagermp.ui.components.BelowAnchorPositionProvider
+import com.lemon.mcdevmanagermp.ui.components.DeveloperAvatar
 import com.lemon.mcdevmanagermp.ui.components.LoginOutlineTextField
 import com.lemon.mcdevmanagermp.ui.components.collectUiEffect
 import com.lemon.mcdevmanagermp.ui.iconpack.IconPack
@@ -88,7 +82,6 @@ import com.lemon.mcdevmanagermp.ui.iconpack.Show
 import com.lemon.mcdevmanagermp.ui.theme.LocalAppColors
 import mcdevmanagermpr.shared.generated.resources.Res
 import mcdevmanagermpr.shared.generated.resources.ic_mc
-import mcdevmanagermpr.shared.generated.resources.img_avatar
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -386,7 +379,7 @@ private fun EmailPasswordForm(
                                             modifier = Modifier.fillMaxWidth(),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            AccountAvatarItem(headImg = account.headImg)
+                                            DeveloperAvatar(headImg = account.headImg, modifier = Modifier.size(28.dp))
                                             Spacer(Modifier.width(10.dp))
                                             Column(modifier = Modifier.weight(1f)) {
                                                 Text(
@@ -477,32 +470,6 @@ private fun EmailPasswordForm(
                 color = colors.textColor
             )
         }
-    }
-}
-
-@Composable
-private fun AccountAvatarItem(headImg: String?) {
-    val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .size(28.dp)
-            .clip(CircleShape)
-            .background(colors.primary.copy(alpha = 0.12f)),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            uri = headImg,
-            state = rememberAsyncImageState(ComposableImageOptions {
-                placeholder(Res.drawable.img_avatar)
-                fallback(Res.drawable.img_avatar)
-                crossfade()
-                error(Res.drawable.img_avatar)
-                sizeMultiplier(2.0f)
-            }),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
     }
 }
 

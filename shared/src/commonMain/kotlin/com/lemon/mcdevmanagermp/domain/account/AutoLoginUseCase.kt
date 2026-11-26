@@ -22,7 +22,6 @@ class AutoLoginUseCase(
                     JSONConverter.decodeFromString(lastAccount.cookiesJson)
                 cookies.forEach { (k, v) -> cookieRepository.addCookie(k, v) }
                 Logger.d("自动登录 登录账号: ${lastAccount.nickname}")
-                Logger.d("cookies: $cookies")
                 val result = userRepository.getUserInfo()
                 if (result is NetworkState.Success) {
                     val userInfo = result.data

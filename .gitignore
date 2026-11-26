@@ -6,6 +6,7 @@ xcuserdata
 !src/**/build/
 local.properties
 keystore.properties
+*.jks
 .idea
 .DS_Store
 captures
@@ -18,7 +19,7 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
-/.data/
+.data/
 
 CLAUDE.md
 AGENTS.md

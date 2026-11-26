@@ -17,6 +17,10 @@ import io.ktor.http.parseServerSetCookieHeader
 import io.ktor.http.renderCookieHeader
 import java.net.InetSocketAddress
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -45,6 +49,26 @@ class SessionCookieEncodingTest {
         storage.addCookie(url, parseServerSetCookieHeader("session=example; Path=/"))
         assertEquals("example", CookiesStore.getCookie("session"))
         assertEquals("session=example", renderCookieHeader(storage.get(url).single()))
+    }
+
+    @Test
+    fun concurrentResponsesKeepIndependentCookieUpdates() = runBlocking {
+        val start = CompletableDeferred<Unit>()
+        val workers = List(8) { worker ->
+            launch(Dispatchers.Default) {
+                start.await()
+                repeat(20) { index ->
+                    CookiesStore.addCookies(listOf("test-$worker-$index=value==; Path=/"))
+                    CookiesStore.getAllCookiesString()
+                }
+            }
+        }
+        start.complete(Unit)
+        workers.joinAll()
+        val expected = (0 until 8).flatMap { worker ->
+            (0 until 20).map { index -> "test-$worker-$index" to "value==" }
+        }.toMap()
+        assertEquals(expected, CookiesStore.getAllCookiesMap())
     }
 
     @Test

@@ -1,18 +1,21 @@
 package com.lemon.mcdevmanagermp.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
@@ -48,6 +53,7 @@ fun FrameWindowScope.DesktopTitleBar(
     state: WindowState,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    focused: Boolean = true,
 ) {
     val scheme = MaterialTheme.colorScheme
     val maximized = state.placement == WindowPlacement.Maximized
@@ -56,7 +62,7 @@ fun FrameWindowScope.DesktopTitleBar(
         modifier = modifier
             .fillMaxWidth()
             .height(BAR_HEIGHT)
-            .background(scheme.surface),
+            .background(if (focused) scheme.surfaceContainerHighest else scheme.surfaceContainer),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         WindowDraggableArea(
@@ -72,12 +78,23 @@ fun FrameWindowScope.DesktopTitleBar(
                         }
                     )
                 },
-        )
+        ) {
+            Box(Modifier.fillMaxHeight().padding(start = 14.dp), contentAlignment = Alignment.CenterStart) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = scheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
 
-        CaptionButton(onClick = { state.isMinimized = true }) { fg ->
+        CaptionButton(label = "最小化", onClick = { state.isMinimized = true }) { fg ->
             MinimizeIcon(fg)
         }
         CaptionButton(
+            label = if (maximized) "还原窗口" else "最大化",
             onClick = {
                 state.placement =
                     if (maximized) WindowPlacement.Floating else WindowPlacement.Maximized
@@ -85,7 +102,7 @@ fun FrameWindowScope.DesktopTitleBar(
         ) { fg ->
             if (maximized) RestoreIcon(fg) else MaximizeIcon(fg)
         }
-        CaptionButton(onClick = onClose, isClose = true) { fg ->
+        CaptionButton(label = "关闭", onClick = onClose, isClose = true) { fg ->
             CloseIcon(fg)
         }
     }
@@ -93,16 +110,20 @@ fun FrameWindowScope.DesktopTitleBar(
 
 @Composable
 private fun CaptionButton(
+    label: String,
     onClick: () -> Unit,
     isClose: Boolean = false,
     content: @Composable (fg: Color) -> Unit,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val hovered by interaction.collectIsHoveredAsState()
+    val pressed by interaction.collectIsPressedAsState()
     val scheme = MaterialTheme.colorScheme
 
     val (bg, fg) = when {
+        isClose && pressed -> Color(0xFF9F2117) to Color.White
         isClose && hovered -> Color(0xFFC42B1C) to Color.White
+        pressed -> scheme.primaryContainer to scheme.onPrimaryContainer
         hovered -> scheme.surfaceVariant to scheme.onSurface
         else -> Color.Transparent to scheme.onSurfaceVariant
     }
@@ -110,9 +131,14 @@ private fun CaptionButton(
     Box(
         modifier = Modifier
             .size(width = BUTTON_WIDTH, height = BAR_HEIGHT)
-            .hoverable(interaction)
             .background(bg)
-            .pointerInput(onClick) { detectTapGestures(onTap = { onClick() }) },
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                onClickLabel = label,
+                role = Role.Button,
+                onClick = onClick,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         content(fg)
