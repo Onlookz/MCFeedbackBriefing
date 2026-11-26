@@ -26,11 +26,12 @@ dependencies {
 }
 
 val appName = "MCFeedbackBriefing"
-val appVersion = libs.versions.versions.name.get()
+val appVersion = "1.2.12"
+val briefingLicenses = rootProject.files("LICENSE", "LICENSE.zh-CN.md")
 val briefingResources = layout.buildDirectory.dir("generated/briefing-app-resources")
 
 val prepareBriefingLicense by tasks.registering(Sync::class) {
-    from(rootProject.file("LICENSE"))
+    from(briefingLicenses)
     into(briefingResources.map { it.dir("common") })
 }
 
@@ -72,7 +73,7 @@ tasks.register<Zip>("packagePortable") {
     from(layout.buildDirectory.dir("compose/binaries/main/app/${appName}")) {
         exclude("**/.data/**", "**/logs/**", "**/downloads/**", "**/.patch_temp/**")
     }
-    from(rootProject.file("LICENSE"))
+    from(briefingLicenses)
     into(appName)
     archiveFileName.set("$appName-$appVersion-portable.zip")
     destinationDirectory.set(layout.buildDirectory.dir("release/portable"))

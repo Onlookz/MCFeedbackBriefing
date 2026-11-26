@@ -1,175 +1,177 @@
-MC开发者管理器 (MCDevManager)
+MC Developer Manager (MCDevManager)
 Copyright © 2024-2026 BitterLemon
 
-# BitterLemon Noncommercial Copyleft License 1.0（BNCL-1.0）
+# BitterLemon Noncommercial Copyleft License 1.0 (BNCL-1.0)
 
-> Source Available License（源码可见许可证）
+> Source Available License
+>
+> This is an English translation of the original Chinese license. The [original Chinese text](LICENSE.zh-CN.md) governs if the two texts differ.
 
-## 第一条 定义
+## Article 1. Definitions
 
-本许可证中：
+For purposes of this License:
 
-1. **"软件"**：指版权所有者发布的全部"源代码"、文档、资源文件、配置文件、构建脚本及相关内容。
-2. **"贡献者"**: 是指将受版权法保护的作品许可在"本许可证"下的自然人或"法人实体"。
-3. **"贡献"**: 是指由任一"贡献者"许可在"本许可证"下的受版权法保护的作品。
-4. **"修改版本"**：指基于本"软件"进行修改、扩展、翻译、合并、重构或衍生形成的任何版本。
-5. **"源代码"**：指适合进行修改的首选形式，包括构建、安装、运行所需的全部文件。
-6. **"分发"**：指以任何方式向"软件"权利人以外的第三方提供"软件"或"修改版本"的行为，包括但不限于复制交付、网络传输、公开发布、通过网络服务使第三方可访问或使用（无论是否交付"软件"副本）。
-7. **"接收者"**：指以任何方式获得"软件"或"修改版本"、或通过网络服务使用"软件"或"修改版本"的任何自然人或组织。
-8. **"商业使用"**：指任何直接或间接以获取商业利益、经济利益、营业收入或支持商业运营为目的的使用方式，具体范围及例外情形见第五条。
-
-------
-
-## 第二条 授权
-
-在遵守本许可证全部条款的前提下，版权所有者授予任何"接收者"以下权利：
-
-- 查看"源代码"；
-- 下载"软件"；
-- 学习和研究"软件"；
-- 修改"软件"；
-- 编译、运行"软件"；
-- "分发"原始版本；
-- "分发"修改版本"。
-
-上述授权仅依据本许可证授予。
+1. **"Software"** means all Source Code, documentation, resource files, configuration files, build scripts, and related materials released by the copyright holder.
+2. **"Contributor"** means a natural person or legal entity that licenses a copyright-protected work under this License.
+3. **"Contribution"** means a copyright-protected work licensed under this License by any Contributor.
+4. **"Modified Version"** means any version created by modifying, extending, translating, merging, refactoring, or otherwise deriving from the Software.
+5. **"Source Code"** means the preferred form for making modifications, including all files required to build, install, and run the Software.
+6. **"Distribute"** means providing the Software or a Modified Version by any means to a third party other than the holder of rights in the Software. This includes delivering copies, transmitting them over a network, publicly releasing them, or making the Software or Modified Version accessible to or usable by third parties through a network service, whether or not a copy of the Software is delivered.
+7. **"Recipient"** means any natural person or organization that obtains the Software or a Modified Version by any means, or uses the Software or a Modified Version through a network service.
+8. **"Commercial Use"** means any use that directly or indirectly aims to obtain commercial benefit, economic benefit, or operating revenue, or to support commercial operations. Article 5 specifies the scope and exceptions.
 
 ------
 
-## 第三条 源代码公开义务
+## Article 2. Grant of Rights
 
-本条适用于**任何**"分发""软件"或"修改版本"的"接收者"。"分发"时必须：
+Subject to compliance with all terms of this License, the copyright holder grants each Recipient the right to:
 
-1. 提供完整对应"源代码"；
-2. 包含全部修改内容（如有）；
-3. 包含构建脚本、配置文件及安装文件；
-4. 提供能够重新构建发布版本的必要说明。
+- View the Source Code.
+- Download the Software.
+- Study and research the Software.
+- Modify the Software.
+- Compile and run the Software.
+- Distribute the original version.
+- Distribute Modified Versions.
 
-仅提供可执行文件、二进制文件或混淆代码，不视为履行本条义务。
-
-------
-
-## 第四条 Copyleft（同许可证传播）要求
-
-本条在第三条的基础上，专门适用于**"分发""修改版本"**的"接收者"。"分发""修改版本"时必须：
-
-- 继续采用 BNCL-1.0 许可证，且不得变更版本或替换为其他许可证；
-- 保留完整许可证文本；
-- 保留全部版权声明；
-- 明确记录修改内容（另见第九条）；
-- 向"接收者"公开完整"源代码"（依第三条）。
-
-不得附加任何限制"接收者"依法享有权利的额外条款。
+These rights are granted solely under this License.
 
 ------
 
-## 第五条 非商业限制与网络服务
+## Article 3. Source Code Disclosure Requirements
 
-未经版权所有者事先书面授权，不得对"软件"或"修改版本"进行任何"商业使用"，也不得通过网络向第三方提供构成"商业使用"的服务——无论该服务是否向用户交付"软件"副本，均属于本条调整范围。不得以"软件"未被"分发"，仅部署于服务器"为由规避本条。
+This Article applies to **any** Recipient who Distributes the Software or a Modified Version. When Distributing, the Recipient must:
 
-**"商业使用"包括但不限于：**
+1. Provide the complete corresponding Source Code.
+2. Include all modifications, if any.
+3. Include the build scripts, configuration files, and installation files.
+4. Provide the instructions needed to rebuild the distributed version.
 
-- 销售"软件"或"修改版本"；
-- 收费技术支持或有偿咨询服务；
-- 集成至商业"软件"或企业内部生产、办公、经营使用；
-- 收费插件、扩展；
-- 云托管、SaaS、PaaS、API 等营利性网络服务；
-- 其他以盈利为目的或服务于商业运营的使用。
-
-**下列情形不属于"商业使用"，无需另行授权**（但仍须遵守本许可证其他条款）：
-
-- 个人学习、研究或教学演示；
-- 非营利性科研机构、非营利组织的内部非经营性使用；
-- 开源社区中的非营利协作、代码评审与技术交流；
-- 将"软件"或基于"软件"的作品用于个人作品集、简历展示，且不产生直接经济收益。
-
-对于不属于上述明确列举情形、性质存在争议的使用方式，"接收者"应主动与版权所有者书面确认，以避免侵权风险。
+Providing only an executable, binary files, or obfuscated code does not satisfy this Article.
 
 ------
 
-## 第六条 商业授权
+## Article 4. Copyleft Requirements
 
-"商业使用"必须另行取得版权所有者签署的商业授权协议。
+In addition to Article 3, this Article applies specifically to Recipients who **Distribute Modified Versions**. When Distributing a Modified Version, the Recipient must:
 
-获得"源代码"副本并不代表获得"商业使用"权。
+- Continue to use BNCL-1.0 without changing the version or substituting another license.
+- Retain the complete license text.
+- Retain all copyright notices.
+- Clearly document the modifications. See also Article 9.
+- Make the complete Source Code available to Recipients as specified in Article 3.
 
-------
-
-## 第七条 商标及品牌
-
-本许可证**不授予**以下权利：
-
-- 项目名称；
-- 商标；
-- Logo；
-- 图标；
-- 应用名称；
-- 包名；
-- 域名；
-- 品牌形象；
-- 其他能够表明官方身份的标识。
-
-"修改版本"不得使用足以使公众误认为官方版本的名称或品牌。
+The Recipient may not impose additional terms that restrict the rights Recipients are legally entitled to exercise.
 
 ------
 
-## 第八条 修改版本标识
+## Article 5. Noncommercial Restrictions and Network Services
 
-"修改版本"必须明确标注：
+Without prior written authorization from the copyright holder, neither the Software nor any Modified Version may be put to any Commercial Use. Nor may a service that constitutes Commercial Use be offered to third parties over a network. This Article applies whether or not a copy of the Software is delivered to users. Deploying the Software only on a server without Distributing it does not exempt that use from this Article.
 
-- 本"软件"已被修改；
-- 修改者名称；
-- 修改日期；
-- 完整"源代码"获取地址。
+**Commercial Use includes, but is not limited to:**
 
-如"软件"具有图形界面，应在"关于"、"版本信息"或类似页面展示上述内容；无图形界面的，应在文档或发布说明中提供。
+- Selling the Software or any Modified Version.
+- Providing paid technical support or consulting services.
+- Integrating it into commercial software or using it for internal production, office work, or business operations within an enterprise.
+- Providing paid plugins or extensions.
+- Providing for-profit network services such as cloud hosting, SaaS, PaaS, or APIs.
+- Any other use intended to generate profit or support commercial operations.
 
-------
+**The following are outside the scope of Commercial Use and require no separate authorization**, subject to the other terms of this License:
 
-## 第九条 专利
+- Personal study, research, or teaching demonstrations.
+- Internal, non-business use by nonprofit research institutions or nonprofit organizations.
+- Nonprofit collaboration, code review, and technical exchange in open-source communities.
+- Displaying the Software or works based on it in a personal portfolio or résumé, without generating direct economic benefit.
 
-在遵守本许可证的前提下，版权所有者授予"接收者"必要的专利许可，仅限于行使第二条所授予权利、且仅限于该专利权利要求因"软件"本身（不包括与其他"软件"的组合）而必然受到侵犯的范围。
-
-如任何"接收者"就本"软件"提起专利侵权诉讼（包括反诉或交叉诉讼），主张"软件"本身或其组成部分构成专利侵权，则该"接收者"依据本许可证获得的全部授权（包括本条专利许可）自诉讼提起之日起立即终止。
-
-------
-
-## 第十条 许可证终止
-
-任何违反本许可证的行为，将立即终止该"接收者"依据本许可证获得的一切权利。
-
-**改正机会**："接收者"首次且非故意违反本许可证的，自版权所有者以书面形式通知违约行为之日起 30 日内改正违约行为并消除影响的，其权利自动恢复。若"接收者"故意违反、重复违反，或未能在上述期限内改正，则权利终止，是否恢复授权由版权所有者自行决定，并应以书面形式确认。
+If a use falls outside the situations expressly listed above and its nature is in question, the Recipient should proactively seek written confirmation from the copyright holder to avoid the risk of infringement.
 
 ------
 
-## 第十一条 无担保声明
+## Article 6. Commercial Authorization
 
-"软件"按"现状（AS IS）"提供。
+Commercial Use requires a separate commercial authorization agreement signed by the copyright holder.
 
-版权所有者不对"软件"的适销性、特定用途适用性、安全性、稳定性或不侵权作任何明示或默示保证。
-
-------
-
-## 第十二条 免责声明与责任限制
-
-"软件"及其中的"贡献"在提供时不带任何明示或默示的担保。在任何情况下，"贡献者"或版权所有者不对任何人因使用"软件"或其中的"贡献"而引发的任何直接或间接损失承担责任，不论因何种原因导致或者基于何种法律理论，即使其曾被建议有此种损失的可能性。
+Receiving a copy of the Source Code does not grant the right to put the Software to Commercial Use.
 
 ------
 
-## 第十三条 第十二条的解释
+## Article 7. Trademarks and Branding
 
-如果上述免责声明和责任限制不为地方法律所支持，上诉法庭应采用与之最接近的关于放弃本程序相关民事责任的地方法律，除非本程序附带收费的品质担保或责任许诺。
+This License does not grant any rights to the following:
+
+- The project name.
+- Trademarks.
+- Logos.
+- Icons.
+- Application names.
+- Package names.
+- Domain names.
+- Brand identity.
+- Other identifiers that can indicate official affiliation.
+
+Modified Versions must not use names or branding that could lead the public to mistake them for an official version.
 
 ------
 
-## 第十四条 生效与接受
+## Article 8. Identification of Modified Versions
 
-任何复制、下载、修改、编译、运行或"分发"本"软件"或"修改版本"的行为，均视为"接收者"已阅读、理解并同意接受本许可证全部条款。
+Modified Versions must clearly state:
 
-若"接收者"不同意本许可证的任何条款，则不得行使本许可证项下的任何权利，亦不得复制、修改、运行或"分发"本"软件"或"修改版本"。
+- That the Software has been modified.
+- The name of the person or entity that modified it.
+- The date of modification.
+- Where to obtain the complete Source Code.
+
+If the Software has a graphical interface, this information must be shown on an About, Version Information, or similar page. Otherwise, it must be provided in the documentation or release notes.
 
 ------
 
-## 附注
+## Article 9. Patents
 
-BNCL-1.0 属于 **Source Available（源码可见）许可证**，并非 OSI 或 FSF 定义的开源许可证。
+Subject to compliance with this License, the copyright holder grants Recipients the patent license necessary to exercise the rights granted under Article 2. This patent license extends only to patent claims necessarily infringed by the Software itself, excluding combinations with other software.
+
+If a Recipient brings a patent infringement action concerning the Software, including a counterclaim or cross-claim, alleging that the Software or any of its components infringes a patent, all rights granted to that Recipient under this License, including this patent license, terminate immediately on the filing of the action.
+
+------
+
+## Article 10. Termination
+
+Any violation of this License immediately terminates all rights granted to the Recipient under it.
+
+**Opportunity to cure.** If this is the Recipient's first violation and it was unintentional, the Recipient's rights are automatically reinstated if they remedy the violation and eliminate its effects within 30 days from the date on which the copyright holder gives written notice of the violation. If the violation was intentional or repeated, or the Recipient failed to remedy it within that period, the rights terminate. Any reinstatement is at the copyright holder's sole discretion and must be confirmed in writing.
+
+------
+
+## Article 11. Disclaimer of Warranty
+
+The Software is provided **AS IS**.
+
+The copyright holder makes no express or implied warranties as to the Software's merchantability, fitness for a particular purpose, security, stability, or noninfringement.
+
+------
+
+## Article 12. Disclaimer and Limitation of Liability
+
+The Software and its Contributions are provided without any express or implied warranty. Under no circumstances shall any Contributor or copyright holder be liable to anyone for direct or indirect losses arising from use of the Software or its Contributions, regardless of the cause or legal theory, even if advised of the possibility of such losses.
+
+------
+
+## Article 13. Interpretation of Article 12
+
+If the preceding disclaimer and limitation of liability are not supported under local law, the appellate court shall apply the local legal rule that most closely approximates the waiver of civil liability concerning this Program, unless the Program is accompanied by a paid warranty or an undertaking of liability.
+
+------
+
+## Article 14. Effect and Acceptance
+
+By copying, downloading, modifying, compiling, running, or Distributing the Software or a Modified Version, the Recipient is deemed to have read, understood, and agreed to all terms of this License.
+
+If the Recipient does not agree to any term of this License, the Recipient may not exercise any right granted under it or copy, modify, run, or Distribute the Software or a Modified Version.
+
+------
+
+## Note
+
+BNCL-1.0 is a **Source Available** license. It falls outside the OSI and FSF definitions of an open-source license.

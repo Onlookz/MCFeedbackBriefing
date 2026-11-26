@@ -4,10 +4,15 @@
 
 ## 下载安装
 
-- **Windows x64 安装版** · 下载 `.msi` 后双击，按安装向导操作。 [下载 MSI](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.11-briefing.1/MCFeedbackBriefing-1.2.11.msi)
-- **Windows x64 便携版** · 解压整个 ZIP，再打开解压目录中的 `MCFeedbackBriefing.exe`。 [下载 ZIP](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.11-briefing.1/MCFeedbackBriefing-1.2.11-portable.zip)
+- **Windows x64 安装版** · 下载 `.msi` 后双击，按安装向导操作。 [下载 MSI](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.12-briefing.1/MCFeedbackBriefing-1.2.12.msi)
+- **Windows x64 便携版** · 解压整个 ZIP，再打开解压目录中的 `MCFeedbackBriefing.exe`。 [下载 ZIP](https://github.com/Onlookz/MCFeedbackBriefing/releases/download/v1.2.12-briefing.1/MCFeedbackBriefing-1.2.12-portable.zip)
 
 两个版本都内置 Java 运行环境。 [查看所有版本](https://github.com/Onlookz/MCFeedbackBriefing/releases)
+
+## 推荐链接
+
+- **Eclipse Temurin JDK 21** · 从源码构建时推荐使用 Windows x64 版。 [官方下载](https://adoptium.net/temurin/releases/?version=21&os=windows&arch=x64&package=jdk)
+- **BitterLemon 的 MCDevManager** · 本项目的上游原版，提供更完整的作品管理、数据分析和收益功能。 [原版仓库](https://github.com/BitterLemonn/MCDevManager) · [原版下载](https://github.com/BitterLemonn/MCDevManager/releases)
 
 ## 界面预览
 
@@ -52,7 +57,7 @@ AI 整理会把经过常见敏感信息替换的反馈文本发送到所配置�
 
 本项目是基于 MCDevManager v1.2.11 的第三方派生版。上游版本对应提交 `619b4417ee6764f18568968950a9a8b58d08729f`。修改者为老曾，修改日期为 2026-11-26 至 2026-11-27。派生版把 Windows 主入口改为玩家反馈简报，加入 AI 整理、原文确认、截图、回复、WPS 导出和独立界面。 [上游项目与文档](https://github.com/BitterLemonn/MCDevManager/tree/619b4417ee6764f18568968950a9a8b58d08729f)
 
-本派生版沿用 **BitterLemon Noncommercial Copyleft License 1.0（BNCL-1.0）**，保留原版权 **Copyright © 2024–2026 BitterLemon**。协议允许在符合条款的前提下查看、修改、构建和分发源码。商业使用须事先取得版权所有者书面授权。 [完整许可证](LICENSE)
+本派生版沿用 **BitterLemon Noncommercial Copyleft License 1.0（BNCL-1.0）**，保留原版权 **Copyright © 2024–2026 BitterLemon**。协议允许在符合条款的前提下查看、修改、构建和分发源码。商业使用须事先取得版权所有者书面授权。英文译本与上游中文原文一同提供，条款解释以中文原文为准。 [英文许可证](LICENSE) · [中文原文](LICENSE.zh-CN.md)
 
 本仓库提供玩家反馈简报的完整对应源码与构建脚本，应用内可在「AI 连接」底部查看源码地址。 [GitHub 源码](https://github.com/Onlookz/MCFeedbackBriefing)
 
