@@ -1,0 +1,114 @@
+package com.lemon.mcdevmanagermp.domain.work
+
+import com.lemon.mcdevmanagermp.data.common.NetworkState
+import com.lemon.mcdevmanagermp.data.common.NoNeedData
+import com.lemon.mcdevmanagermp.data.dto.netease.work.ApplyReviewDTO
+import com.lemon.mcdevmanagermp.data.dto.netease.work.ApplySelfTestDTO
+import com.lemon.mcdevmanagermp.data.dto.netease.work.AppointOnlineDTO
+import com.lemon.mcdevmanagermp.data.dto.netease.work.ChangePriceDTO
+import com.lemon.mcdevmanagermp.data.dto.netease.work.OnlineItemDTO
+import com.lemon.mcdevmanagermp.data.vo.netease.resource.ResourceData
+import com.lemon.mcdevmanagermp.data.vo.netease.work.ReviewApplyResultVO
+import com.lemon.mcdevmanagermp.data.vo.netease.work.ReviewFeedbackVO
+import com.lemon.mcdevmanagermp.domain.resource.GetResourceListUseCase
+import com.lemon.mcdevmanagermp.domain.resource.ResourceRepository
+
+/**
+ * 作品上架管理 UseCase：封装作品列表获取与开平写操作（保存提审 / 提交审核 / 撤销 / 反馈 / 上架 / 定时上架）。
+ *
+ * 写操作对应开平接口第1-7节。
+ */
+class WorkManageUseCase(
+    private val getResourceListUseCase: GetResourceListUseCase,
+    private val resourceRepository: ResourceRepository
+) {
+    /**
+     * 获取指定平台的作品列表（全量返回，作品数量通常较少无需分页）
+     */
+    suspend fun getWorkList(platform: String = "pe"): NetworkState<List<ResourceData>> {
+        return getResourceListUseCase(platform)
+    }
+
+    /**
+     * 提交审核。isCheckApply=false 直接提交，true 先校验。
+     */
+    suspend fun submitForReview(
+        itemId: String,
+        applyReviewText: String = "",
+        conflictNotify: Int = 1,
+        conflictNotifyType: List<Int> = listOf(1),
+        isCheckApply: Boolean = false
+    ): NetworkState<ReviewApplyResultVO> {
+        return resourceRepository.applyReview(
+            itemId,
+            ApplyReviewDTO(applyReviewText, conflictNotify, conflictNotifyType, isCheckApply)
+        )
+    }
+
+    /**
+     * 撤销审核
+     */
+    suspend fun cancelReview(itemId: String): NetworkState<NoNeedData> {
+        return resourceRepository.cancelReview(itemId)
+    }
+
+    /**
+     * 查看审核反馈
+     */
+    suspend fun getReviewFeedback(itemId: String): NetworkState<ReviewFeedbackVO> {
+        return resourceRepository.getReviewFeedback(itemId)
+    }
+
+    /**
+     * 上架。opPlatform 默认 "all" 全平台。
+     */
+    suspend fun publish(
+        itemId: String,
+        opPlatform: String = "all"
+    ): NetworkState<NoNeedData> {
+        return resourceRepository.onlineItem(itemId, OnlineItemDTO(opPlatform))
+    }
+
+    /**
+     * 定时上架。appointOnlineTime 格式 "YYYY-MM-DD HH:mm:ss"；传 null 取消定时上架。
+     */
+    suspend fun appointOnline(
+        itemId: String,
+        appointOnlineTime: String?,
+        opPlatform: String = "all"
+    ): NetworkState<NoNeedData> {
+        return resourceRepository.appointOnlineItem(
+            itemId,
+            AppointOnlineDTO(appointOnlineTime, opPlatform)
+        )
+    }
+
+    /**
+     * 提交自测
+     * @param passCheck: true 免机审 false 需机审
+     */
+    suspend fun applySelfTest(itemId: String, passCheck: Boolean): NetworkState<NoNeedData> {
+        return resourceRepository.applySelfTest(itemId, ApplySelfTestDTO(passCheck))
+    }
+
+    /**
+     * 取消自测
+     */
+    suspend fun cancelSelfTest(itemId: String): NetworkState<NoNeedData> {
+        return resourceRepository.cancelSelfTest(itemId)
+    }
+
+    /**
+     * 修改价格
+     */
+    suspend fun changePrice(itemId: String, content: ChangePriceDTO): NetworkState<NoNeedData> {
+        return resourceRepository.changePrice(itemId, content)
+    }
+
+    /**
+     * 删除作品
+     */
+    suspend fun deleteItem(itemId: String): NetworkState<NoNeedData> {
+        return resourceRepository.deleteItem(itemId)
+    }
+}

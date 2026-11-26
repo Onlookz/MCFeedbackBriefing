@@ -1,0 +1,396 @@
+package com.lemon.mcdevmanagermp.ui.pages.main
+
+import androidx.lifecycle.viewModelScope
+import com.lemon.mcdevmanagermp.data.common.AppContext
+import com.lemon.mcdevmanagermp.data.common.NetworkState
+import com.lemon.mcdevmanagermp.data.consts.enums.RankCategoryTypeEnum
+import com.lemon.mcdevmanagermp.data.consts.enums.RankSubCategoryTypeEnum
+import com.lemon.mcdevmanagermp.data.page.RankCategoryData
+import com.lemon.mcdevmanagermp.data.repository.AccountRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.AnalyzeRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.EcoFeeRecordRepository
+import com.lemon.mcdevmanagermp.data.repository.IncomeRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.MailboxRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.RankListRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.ResourceRepositoryImpl
+import com.lemon.mcdevmanagermp.data.repository.UserRepositoryImpl
+import com.lemon.mcdevmanagermp.data.vo.netease.user.LevelInfoVO
+import com.lemon.mcdevmanagermp.data.vo.netease.user.OverviewVO
+import com.lemon.mcdevmanagermp.data.vo.netease.user.UserInfoVO
+import com.lemon.mcdevmanagermp.domain.main.MainUseCase
+import com.lemon.mcdevmanagermp.domain.main.ProfitMonth
+import com.lemon.mcdevmanagermp.domain.main.profitMonthWindow
+import com.lemon.mcdevmanagermp.domain.rankList.RankListUseCase
+import com.lemon.mcdevmanagermp.domain.resource.GetResourceListUseCase
+import com.lemon.mcdevmanagermp.ui.base.BaseViewModel
+import com.lemon.mcdevmanagermp.utils.Logger
+import com.lemon.mcdevmanagermp.utils.ProfitData
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+
+class MainViewModel : BaseViewModel<MainState, MainAction, MainEffect>(MainState()) {
+
+    companion object {
+        /** 未读消息轮询间隔（毫秒） */
+        private const val UNREAD_POLLING_INTERVAL_MS = 60_000L
+
+        private val cacheTimeZone = TimeZone.of("Asia/Shanghai")
+
+        private var cachedDashboardDate: String? = null
+        private var cachedRankListDate: String? = null
+        private var cachedProfitDate: String? = null
+
+        var cachedUserInfo: UserInfoVO? = null
+            private set
+        var cachedOverview: OverviewVO? = null
+            private set
+        var cachedLevelInfo: LevelInfoVO? = null
+            private set
+
+        var cachedProfitData: ProfitData? = null
+            private set
+        var cachedLastMonthProfitData: ProfitData? = null
+            private set
+        var cachedNextMonthProfitData: ProfitData? = null
+            private set
+
+        var cachedRankListData: List<RankCategoryData> = emptyList()
+            private set
+
+        var cachedShowLastMonthProfit: Boolean = false
+            private set
+        var cachedShowNextMonthProfit: Boolean = false
+            private set
+
+        // 消息未读数缓存（按天）
+        var cachedMailboxUnreadCount: Int = 0
+            private set
+
+        private fun todayString(): String {
+            val now = Clock.System.now().toLocalDateTime(cacheTimeZone)
+            return "${now.year}-${now.month.number}-${now.day}"
+        }
+
+        fun invalidateCache() {
+            cachedDashboardDate = null
+            cachedRankListDate = null
+            cachedProfitDate = null
+        }
+
+        fun invalidateAllCache() {
+            invalidateCache()
+            cachedUserInfo = null
+            cachedOverview = null
+            cachedLevelInfo = null
+            cachedProfitData = null
+            cachedLastMonthProfitData = null
+            cachedNextMonthProfitData = null
+            cachedRankListData = emptyList()
+        }
+    }
+
+    private val mainUseCase = MainUseCase(
+        userRepository = UserRepositoryImpl.INSTANCE,
+        analyzeRepository = AnalyzeRepositoryImpl.INSTANCE,
+        getResourceListUseCase = GetResourceListUseCase(ResourceRepositoryImpl.INSTANCE)
+    )
+    private val incomeRepository = IncomeRepositoryImpl.INSTANCE
+    private val rankListUseCase = RankListUseCase(
+        rankListRepository = RankListRepositoryImpl.INSTANCE
+    )
+    private val accountRepository = AccountRepositoryImpl.INSTANCE
+    private val mailboxRepository = MailboxRepositoryImpl.INSTANCE
+
+    init {
+        val today = todayString()
+
+        // 从缓存中恢复仪表盘数据
+        if (today == cachedDashboardDate && cachedUserInfo != null) {
+            setState {
+                copy(
+                    userInfo = cachedUserInfo,
+                    overview = cachedOverview,
+                    levelInfo = cachedLevelInfo,
+                    isRefreshing = false
+                )
+            }
+        } else {
+            loadDashboard()
+        }
+
+        // 从缓存中恢复排行榜数据
+        if (today == cachedRankListDate && cachedRankListData.isNotEmpty()) {
+            setState { copy(rankListData = cachedRankListData) }
+        } else {
+            loadRankList()
+        }
+
+        // 从缓存中恢复利润数据
+        if (today == cachedProfitDate && cachedProfitData != null) {
+            setState {
+                copy(
+                    profitData = cachedProfitData,
+                    lastProfitData = cachedLastMonthProfitData,
+                    nextProfitData = cachedNextMonthProfitData,
+                    isProfitLoading = false,
+                    showLastMonthProfit = cachedShowLastMonthProfit,
+                    showNextMonthProfit = cachedShowNextMonthProfit
+                )
+            }
+        } else {
+            loadProfit()
+        }
+
+        // 消息未读数：先从静态缓存恢复（避免角标闪烁），随后无条件刷新以同步已读状态。
+        // MainViewModel 每次从子页面返回首页时都会重建（companion 缓存即为此设计），
+        // 因此用户在邮箱中读完邮件返回后，此处会重新拉取 count，及时清理已读提示。
+        setState { copy(mailboxUnreadCount = cachedMailboxUnreadCount) }
+        loadMailboxUnread()
+
+        // 启动未读消息定时轮询：每 60s 刷新一次，保证首页角标新鲜
+        startMailboxUnreadPolling()
+    }
+
+    private fun startMailboxUnreadPolling() {
+        viewModelScope.launch {
+            while (true) {
+                delay(UNREAD_POLLING_INTERVAL_MS)
+                loadMailboxUnread()
+            }
+        }
+    }
+
+    override fun dispatch(action: MainAction) {
+        when (action) {
+            is MainAction.SelectTab -> setState { copy(selectedTab = action.tab) }
+            MainAction.LoadData -> {
+                invalidateAllCache()
+                loadDashboard()
+                loadProfit()
+                loadMailboxUnread()
+            }
+
+            MainAction.RefreshData -> {
+                invalidateCache()
+                loadDashboard()
+                loadProfit()
+                loadMailboxUnread()
+            }
+
+            MainAction.ToggleDrawer -> setState { copy(showDrawer = !showDrawer) }
+            is MainAction.GetRankData -> loadRankCategory(action.category, action.subCategory)
+            MainAction.ToggleProfitExpand -> setState { copy(profitExpanded = !profitExpanded) }
+            MainAction.ToggleLastProfitExpand -> setState { copy(lastProfitExpanded = !lastProfitExpanded) }
+            MainAction.ToggleNextProfitExpand -> setState { copy(nextProfitExpanded = !nextProfitExpanded) }
+        }
+    }
+
+    private fun loadDashboard() {
+        setState { copy(isRefreshing = true) }
+        viewModelScope.launch {
+            try {
+                val result = mainUseCase.loadDashboard()
+                // session 过期优先：统一跳登录，不重复弹业务失败 Toast
+                val sessionExpired = mainUseCase.isSessionExpired(
+                    result.userInfo,
+                    result.overview,
+                    result.levelInfo
+                )
+
+                // 对每个 NetworkState 显式分支：Success 取数据；Error 记录日志并反馈
+                fun <T> unpack(state: NetworkState<T>, name: String): T? = when (state) {
+                    is NetworkState.Success -> state.data
+                    is NetworkState.Error -> {
+                        if (!sessionExpired) {
+                            Logger.e("$name 加载失败: ${state.msg}", state.e)
+                            sendEffect(MainEffect.ShowToast("$name 加载失败"))
+                        }
+                        null
+                    }
+                }
+
+                val userInfo = unpack(result.userInfo, "用户信息")
+                val overview = unpack(result.overview, "概览数据")
+                val levelInfo = unpack(result.levelInfo, "等级信息")
+                cachedUserInfo = userInfo
+                cachedOverview = overview
+                cachedLevelInfo = levelInfo
+                AppContext.userInfo = userInfo
+                cachedDashboardDate = todayString()
+                setState {
+                    copy(
+                        userInfo = userInfo,
+                        overview = overview,
+                        levelInfo = levelInfo,
+                        isRefreshing = false
+                    )
+                }
+                if (sessionExpired) {
+                    sendEffect(MainEffect.SessionExpired)
+                } else {
+                    syncEcoFeeRecords()
+                    // 兼容旧版本：将当前账号的 email 字段更新为 nickname
+                    if (userInfo != null) {
+                        val currentAccount = accountRepository.getLastUsedAccount()
+                        if (currentAccount != null && currentAccount.nickname != userInfo.nickname) {
+                            accountRepository.updateNicknameById(
+                                currentAccount.id,
+                                userInfo.nickname
+                            )
+                        }
+                    }
+                    if (overview != null && overview.yesterdayDiamond == 0 && overview.yesterdayDownload == 0) {
+                        sendEffect(MainEffect.ShowToast("昨日数据可能未更新"))
+                    }
+                }
+            } catch (e: Exception) {
+                Logger.e("仪表盘加载异常", e)
+                setState { copy(isRefreshing = false) }
+                sendEffect(MainEffect.ShowToast("数据加载失败"))
+            }
+        }
+    }
+
+    private fun loadProfit() {
+        setState {
+            copy(
+                isProfitLoading = true,
+                profitExpanded = false,
+                lastProfitExpanded = false,
+                nextProfitExpanded = false
+            )
+        }
+        viewModelScope.launch {
+            try {
+                val timeZone = TimeZone.of("Asia/Shanghai")
+                val now = Clock.System.now().toLocalDateTime(timeZone)
+                val window = profitMonthWindow(LocalDate(now.year, now.month.number, now.day))
+                val result = mainUseCase.computeProfit(
+                    year = now.year,
+                    month = now.month.number,
+                    includeLastMonth = window.showLastMonth,
+                    includeNextMonth = window.showNextMonth
+                )
+                cachedProfitData = result.thisMonth
+                cachedLastMonthProfitData = result.lastMonth
+                cachedNextMonthProfitData = result.nextMonth
+                cachedShowLastMonthProfit = window.showLastMonth
+                cachedShowNextMonthProfit = window.showNextMonth
+                cachedProfitDate = todayString()
+                saveLastMonthSnapshot(window.current.shift(-1), result.lastMonth)
+                setState {
+                    copy(
+                        profitData = result.thisMonth,
+                        lastProfitData = result.lastMonth,
+                        nextProfitData = result.nextMonth,
+                        isProfitLoading = false,
+                        showLastMonthProfit = cachedShowLastMonthProfit,
+                        showNextMonthProfit = cachedShowNextMonthProfit
+                    )
+                }
+            } catch (_: Exception) {
+                setState { copy(isProfitLoading = false) }
+            }
+        }
+    }
+
+    /**
+     * 登录后自动反推已出账月份的生态费，无需进入收益详情页触发。
+     * 已在本地记录费率的月份跳过，其余月份按结算单反推后落库；失败不影响首页加载。
+     */
+    private fun syncEcoFeeRecords() {
+        val accountKey = AppContext.userInfo?.nickname ?: return
+        viewModelScope.launch {
+            try {
+                val settlements = when (val result = incomeRepository.getIncome("pe")) {
+                    is NetworkState.Success -> result.data?.incomes.orEmpty()
+                    is NetworkState.Error -> {
+                        Logger.e("获取结算数据失败: ${result.msg}", result.e)
+                        return@launch
+                    }
+                }
+                val timeZone = TimeZone.of("Asia/Shanghai")
+                val today = Clock.System.now().toLocalDateTime(timeZone).date
+                mainUseCase.syncEcoFeeRecords(accountKey, settlements, today)
+            } catch (e: Exception) {
+                Logger.e("自动反推生态费失败", e)
+            }
+        }
+    }
+
+    /**
+     * 计算周期截止后登录即保存上月预估快照，供结算单出账后反推生态费；
+     * 上月流水不完整或无流水时跳过，待下次登录重试。失败不影响首页加载。
+     */
+    private fun saveLastMonthSnapshot(month: ProfitMonth, lastMonth: ProfitData?) {
+        val last = lastMonth ?: return
+        val accountKey = AppContext.userInfo?.nickname ?: return
+        viewModelScope.launch {
+            try {
+                EcoFeeRecordRepository.INSTANCE.saveSnapshot(accountKey, month, last)
+            } catch (e: Exception) {
+                Logger.e("保存上月生态费快照失败", e)
+            }
+        }
+    }
+
+    private fun loadMailboxUnread() {
+        viewModelScope.launch {
+            when (val r = mailboxRepository.getUnReadCount()) {
+                is NetworkState.Success -> {
+                    cachedMailboxUnreadCount = r.data?.count ?: 0
+                    setState { copy(mailboxUnreadCount = cachedMailboxUnreadCount) }
+                }
+
+                is NetworkState.Error -> {
+                    // 静默处理：session 过期由 loadDashboard 统一捕获并跳转登录
+                }
+            }
+        }
+    }
+
+    private fun loadRankList() {
+        viewModelScope.launch {
+            val categories = RankCategoryTypeEnum.entries
+            val results = coroutineScope {
+                categories.map { category ->
+                    async { category to rankListUseCase.getRankData(category) }
+                }.associate { it.await() }
+            }
+            val rankData = categories.map {
+                results[it] ?: RankCategoryData(
+                    it.typeName,
+                    com.lemon.mcdevmanagermp.data.page.commonRankCategoryContent
+                )
+            }
+            cachedRankListData = rankData
+            cachedRankListDate = todayString()
+            setState { copy(rankListData = rankData) }
+        }
+    }
+
+    private fun loadRankCategory(
+        category: RankCategoryTypeEnum,
+        subCategory: RankSubCategoryTypeEnum?
+    ) {
+        viewModelScope.launch {
+            try {
+                val newData = rankListUseCase.getRankData(category, subCategory)
+                setState {
+                    copy(rankListData = rankListData.map {
+                        if (it.categoryTitle == category.typeName) newData else it
+                    })
+                }
+            } catch (_: Exception) {
+                sendEffect(MainEffect.ShowToast("排行榜加载失败"))
+            }
+        }
+    }
+}

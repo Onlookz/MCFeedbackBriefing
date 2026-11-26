@@ -1,0 +1,311 @@
+package com.lemon.mcdevmanagermp.ui.theme
+
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
+import kotlin.math.min
+
+// ============================================================
+// Seed Color — 项目主色调，所有 Material3 颜色由此派生
+// ============================================================
+val DefaultSeedColor = Color(0xFF4F378B)
+const val DefaultSeedColorLong = 0xFF4F378BL
+
+data class SeedColorOption(val name: String, val color: Color, val colorLong: Long)
+
+val PredefinedSeedColors = listOf(
+    SeedColorOption("Mauve",     Color(0xFF4F378B), 0xFF4F378BL),
+    SeedColorOption("Basil",     Color(0xFF2D6A4F), 0xFF2D6A4FL),
+    SeedColorOption("Cerulean",  Color(0xFF1B4965), 0xFF1B4965L),
+    SeedColorOption("Crimson",   Color(0xFF9A1B29), 0xFF9A1B29L),
+    SeedColorOption("Tangerine", Color(0xFFBF4E00), 0xFFBF4E00L),
+    SeedColorOption("Marigold",  Color(0xFF8B6914), 0xFF8B6914L),
+    SeedColorOption("Rose",      Color(0xFF8B2252), 0xFF8B2252L),
+    SeedColorOption("Lavender",  Color(0xFF6750A4), 0xFF6750A4L),
+    SeedColorOption("Sage",      Color(0xFF4A6741), 0xFF4A6741L),
+    SeedColorOption("Teal",      Color(0xFF00696F), 0xFF00696FL),
+    SeedColorOption("Slate",     Color(0xFF4A5467), 0xFF4A5467L),
+    SeedColorOption("Cocoa",     Color(0xFF6B3A2A), 0xFF6B3A2AL),
+)
+
+// ============================================================
+// ExtendedColors — 不属于 Material3 标准色板的业务语义颜色
+// ============================================================
+data class ExtendedColors(
+    val textColor: Color,
+    val success: Color,
+    val warning: Color,
+    val danger: Color,
+    val info: Color,
+    val vip: Color,
+    val gold: Color,
+    val online: Color,
+    val offline: Color,
+    val rarity: Color,
+    val gameQuality: Color,
+    val divider: Color,
+    val disabled: Color,
+    val shimmer: Color,
+)
+
+// ============================================================
+// AppColors — 统一颜色入口，桥接 Material3 ColorScheme + 业务色
+// ============================================================
+class AppColors(
+    val scheme: ColorScheme,
+    val extended: ExtendedColors,
+) {
+    // Material3 基础色
+    val primary: Color get() = scheme.primary
+    val onPrimary: Color get() = scheme.onPrimary
+    val primaryContainer: Color get() = scheme.primaryContainer
+    val onPrimaryContainer: Color get() = scheme.onPrimaryContainer
+    val secondary: Color get() = scheme.secondary
+    val onSecondary: Color get() = scheme.onSecondary
+    val secondaryContainer: Color get() = scheme.secondaryContainer
+    val onSecondaryContainer: Color get() = scheme.onSecondaryContainer
+    val tertiary: Color get() = scheme.tertiary
+    val onTertiary: Color get() = scheme.onTertiary
+    val background: Color get() = scheme.background
+    val onBackground: Color get() = scheme.onBackground
+    val surface: Color get() = scheme.surface
+    val onSurface: Color get() = scheme.onSurface
+    val surfaceVariant: Color get() = scheme.surfaceVariant
+    val onSurfaceVariant: Color get() = scheme.onSurfaceVariant
+    val surfaceTint: Color get() = scheme.surfaceTint
+    val inverseSurface: Color get() = scheme.inverseSurface
+    val inverseOnSurface: Color get() = scheme.inverseOnSurface
+    val surfaceContainer: Color get() = scheme.surfaceContainer
+    val surfaceContainerHigh: Color get() = scheme.surfaceContainerHigh
+    val surfaceContainerHighest: Color get() = scheme.surfaceContainerHighest
+    val surfaceContainerLow: Color get() = scheme.surfaceContainerLow
+    val surfaceContainerLowest: Color get() = scheme.surfaceContainerLowest
+    val error: Color get() = scheme.error
+    val onError: Color get() = scheme.onError
+    val outline: Color get() = scheme.outline
+    val outlineVariant: Color get() = scheme.outlineVariant
+    val scrim: Color get() = scheme.scrim
+
+    // 业务语义色
+    val textColor: Color get() = extended.textColor
+    val success: Color get() = extended.success
+    val warning: Color get() = extended.warning
+    val danger: Color get() = extended.danger
+    val info: Color get() = extended.info
+    val vip: Color get() = extended.vip
+    val gold: Color get() = extended.gold
+    val online: Color get() = extended.online
+    val offline: Color get() = extended.offline
+    val rarity: Color get() = extended.rarity
+    val gameQuality: Color get() = extended.gameQuality
+    val divider: Color get() = extended.divider
+    val disabled: Color get() = extended.disabled
+    val shimmer: Color get() = extended.shimmer
+}
+
+val LocalAppColors = compositionLocalOf<AppColors> {
+    error("No AppColors provided — 请确保 AppTheme 包裹了根 Composable")
+}
+
+// ============================================================
+// HSL Color Utilities — 从 seed 派生 Material3 tonal palette
+// ============================================================
+
+private data class Hsl(val h: Float, val s: Float, val l: Float)
+
+private fun Color.toHsl(): Hsl {
+    val r = red
+    val g = green
+    val b = blue
+    val max = maxOf(r, g, b)
+    val min = minOf(r, g, b)
+    val l = (max + min) / 2f
+
+    if (max == min) return Hsl(0f, 0f, l)
+
+    val d = max - min
+    val s = if (l > 0.5f) d / (2f - max - min) else d / (max + min)
+    val h = when (max) {
+        r -> ((g - b) / d + if (g < b) 6f else 0f) / 6f
+        g -> ((b - r) / d + 2f) / 6f
+        else -> ((r - g) / d + 4f) / 6f
+    }
+    return Hsl(h * 360f, s.coerceIn(0f, 1f), l.coerceIn(0f, 1f))
+}
+
+private fun hslColor(h: Float, s: Float, l: Float, alpha: Float = 1f): Color {
+    val hh = (h % 360f).let { if (it < 0) it + 360f else it } / 360f
+    val ss = s.coerceIn(0f, 1f)
+    val ll = l.coerceIn(0f, 1f)
+
+    if (ss == 0f) return Color(ll, ll, ll, alpha)
+
+    fun hue2rgb(p: Float, q: Float, t: Float): Float {
+        var tt = t
+        if (tt < 0f) tt += 1f
+        if (tt > 1f) tt -= 1f
+        return when {
+            tt < 1f / 6f -> p + (q - p) * 6f * tt
+            tt < 1f / 2f -> q
+            tt < 2f / 3f -> p + (q - p) * (2f / 3f - tt) * 6f
+            else -> p
+        }
+    }
+
+    val q = if (ll < 0.5f) ll * (1f + ss) else ll + ss - ll * ss
+    val p = 2f * ll - q
+    val r = hue2rgb(p, q, hh + 1f / 3f)
+    val g = hue2rgb(p, q, hh)
+    val b = hue2rgb(p, q, hh - 1f / 3f)
+    return Color(r, g, b, alpha)
+}
+
+// ============================================================
+// Seed-based ColorScheme Generators
+// ============================================================
+
+fun seedLightColorScheme(seed: Color = DefaultSeedColor): ColorScheme {
+    val (h, s, _) = seed.toHsl()
+    val neutralHue = h
+    val tertiaryHue = (h + 32f) % 360f
+    val primarySat = min(s, 0.54f)
+
+    return lightColorScheme(
+        primary = hslColor(h, primarySat, 0.44f),
+        onPrimary = Color.White,
+        primaryContainer = hslColor(h, min(s, 0.42f), 0.93f),
+        onPrimaryContainer = hslColor(h, min(s, 0.52f), 0.22f),
+        inversePrimary = hslColor(h, min(s, 0.52f), 0.76f),
+
+        secondary = hslColor(h, min(s, 0.24f), 0.44f),
+        onSecondary = Color.White,
+        secondaryContainer = hslColor(h, min(s, 0.26f), 0.925f),
+        onSecondaryContainer = hslColor(h, min(s, 0.32f), 0.22f),
+
+        tertiary = hslColor(tertiaryHue, min(s, 0.34f), 0.44f),
+        onTertiary = Color.White,
+        tertiaryContainer = hslColor(tertiaryHue, min(s, 0.32f), 0.925f),
+        onTertiaryContainer = hslColor(tertiaryHue, min(s, 0.38f), 0.22f),
+
+        // 浅色画布采用清透微染浅灰，配合洁净纯白主卡片（surfaceContainerHigh）拉开现代层次感
+        background = hslColor(neutralHue, min(s, 0.10f), 0.955f),
+        onBackground = hslColor(neutralHue, min(s, 0.10f), 0.13f),
+        surface = hslColor(neutralHue, min(s, 0.08f), 0.975f),
+        onSurface = hslColor(neutralHue, min(s, 0.10f), 0.13f),
+        surfaceVariant = hslColor(neutralHue, min(s, 0.10f), 0.935f),
+        onSurfaceVariant = hslColor(neutralHue, min(s, 0.10f), 0.42f),
+        surfaceTint = hslColor(h, primarySat, 0.44f),
+
+        inverseSurface = hslColor(neutralHue, min(s, 0.12f), 0.18f),
+        inverseOnSurface = hslColor(neutralHue, min(s, 0.06f), 0.95f),
+
+        surfaceBright = Color.White,
+        surfaceDim = hslColor(neutralHue, min(s, 0.10f), 0.91f),
+        surfaceContainerLowest = Color.White,
+        surfaceContainerLow = hslColor(neutralHue, min(s, 0.08f), 0.965f),
+        surfaceContainer = hslColor(neutralHue, min(s, 0.06f), 0.985f),
+        surfaceContainerHigh = Color.White,
+        surfaceContainerHighest = hslColor(neutralHue, min(s, 0.10f), 0.945f),
+
+        error = Color(0xFFBA1A1A),
+        onError = Color.White,
+        errorContainer = Color(0xFFFFDAD6),
+        onErrorContainer = Color(0xFF410002),
+
+        outline = hslColor(neutralHue, min(s, 0.10f), 0.58f),
+        outlineVariant = hslColor(neutralHue, min(s, 0.10f), 0.87f),
+        scrim = Color.Black,
+    )
+}
+
+fun seedDarkColorScheme(seed: Color = DefaultSeedColor): ColorScheme {
+    val (h, s, _) = seed.toHsl()
+    val neutralHue = h
+    val tertiaryHue = (h + 32f) % 360f
+
+    return darkColorScheme(
+        primary = hslColor(h, min(s, 0.56f), 0.74f),
+        onPrimary = hslColor(h, min(s, 0.56f), 0.16f),
+        primaryContainer = hslColor(h, min(s, 0.44f), 0.28f),
+        onPrimaryContainer = hslColor(h, min(s, 0.55f), 0.90f),
+        inversePrimary = hslColor(h, min(s, 0.54f), 0.44f),
+
+        secondary = hslColor(h, min(s, 0.24f), 0.74f),
+        onSecondary = hslColor(h, min(s, 0.24f), 0.16f),
+        secondaryContainer = hslColor(h, min(s, 0.24f), 0.28f),
+        onSecondaryContainer = hslColor(h, min(s, 0.24f), 0.90f),
+
+        tertiary = hslColor(tertiaryHue, min(s, 0.34f), 0.74f),
+        onTertiary = hslColor(tertiaryHue, min(s, 0.34f), 0.16f),
+        tertiaryContainer = hslColor(tertiaryHue, min(s, 0.30f), 0.28f),
+        onTertiaryContainer = hslColor(tertiaryHue, min(s, 0.36f), 0.90f),
+
+        background = hslColor(neutralHue, min(s, 0.06f), 0.08f),
+        onBackground = hslColor(neutralHue, min(s, 0.04f), 0.90f),
+        surface = hslColor(neutralHue, min(s, 0.06f), 0.10f),
+        onSurface = hslColor(neutralHue, min(s, 0.04f), 0.90f),
+        surfaceVariant = hslColor(neutralHue, min(s, 0.10f), 0.18f),
+        onSurfaceVariant = hslColor(neutralHue, min(s, 0.10f), 0.74f),
+        surfaceTint = hslColor(h, min(s, 0.56f), 0.74f),
+
+        inverseSurface = hslColor(neutralHue, min(s, 0.04f), 0.90f),
+        inverseOnSurface = hslColor(neutralHue, min(s, 0.06f), 0.15f),
+
+        surfaceBright = hslColor(neutralHue, min(s, 0.06f), 0.22f),
+        surfaceDim = hslColor(neutralHue, min(s, 0.06f), 0.08f),
+        surfaceContainer = hslColor(neutralHue, min(s, 0.06f), 0.14f),
+        surfaceContainerHigh = hslColor(neutralHue, min(s, 0.06f), 0.18f),
+        surfaceContainerHighest = hslColor(neutralHue, min(s, 0.06f), 0.22f),
+        surfaceContainerLow = hslColor(neutralHue, min(s, 0.06f), 0.11f),
+        surfaceContainerLowest = hslColor(neutralHue, min(s, 0.06f), 0.06f),
+
+        error = Color(0xFFFFB4AB),
+        onError = Color(0xFF690005),
+        errorContainer = Color(0xFF93000A),
+        onErrorContainer = Color(0xFFFFDAD6),
+
+        outline = hslColor(neutralHue, min(s, 0.06f), 0.48f),
+        outlineVariant = hslColor(neutralHue, min(s, 0.08f), 0.28f),
+        scrim = Color.Black,
+    )
+}
+
+// ============================================================
+// ExtendedColors — 从 ColorScheme 派生的亮/暗业务色
+// ============================================================
+
+fun lightExtendedColors() = ExtendedColors(
+    textColor = Color(0xFF1E1F24),
+    success = Color(0xFF2F7D57),
+    warning = Color(0xFFB5761A),
+    danger = Color(0xFFBA1A1A),
+    info = Color(0xFF2B7A9B),
+    vip = Color(0xFFB5761A),
+    gold = Color(0xFFC29024),
+    online = Color(0xFF2F855A),
+    offline = Color(0xFF8C929C),
+    rarity = Color(0xFF755BB4),
+    gameQuality = Color(0xFFC96A34),
+    divider = Color(0xFFE5E7EE),
+    disabled = Color(0xFFC7CBD4),
+    shimmer = Color(0xFFECEEF3),
+)
+
+fun darkExtendedColors() = ExtendedColors(
+    textColor = Color(0xFFE6E4EA),
+    success = Color(0xFF6BBF92),
+    warning = Color(0xFFD9A654),
+    danger = Color(0xFFFFB4AB),
+    info = Color(0xFF6FB1D1),
+    vip = Color(0xFFD9A654),
+    gold = Color(0xFFDFB864),
+    online = Color(0xFF6BBF92),
+    offline = Color(0xFF7B818C),
+    rarity = Color(0xFFA792D6),
+    gameQuality = Color(0xFFE09468),
+    divider = Color(0xFF333640),
+    disabled = Color(0xFF4B4F5A),
+    shimmer = Color(0xFF333640),
+)
